@@ -3,6 +3,7 @@
 Usage:
   pyninja user info
   pyninja device list
+  pyninja device info <guid>
   pyninja device actuate <guid> <value>
   pyninja (-h | --help)
 
@@ -24,7 +25,7 @@ class NinjaCLI(object):
 		self.api = NinjaAPI.with_user_token_file( '~/ninja_token.txt' )
 		
 		# call the actual function that does the work
-		main_functions = [ ('user', 'info'), ('device', 'list'), ('device', 'actuate') ]
+		main_functions = [ ('user', 'info'), ('device', 'list'), ('device', 'info'), ('device', 'actuate') ]
 		for names in main_functions:
 			func = '_'.join( names )
 			if all( [arguments[name] for name in names] ):
@@ -55,13 +56,19 @@ class NinjaCLI(object):
 				
 				puts( )
 	
+	def _cmd_device_info( self, arguments ):
+		guid = arguments['<guid>']
+		
+		device = self.api.get_device( guid )
+		
+		self._show_device_info( device )
+	
 	def _cmd_device_actuate( self, arguments ):
 		guid = arguments['<guid>']
 		value = arguments['<value>']
 		
 		device = self.api.get_device( guid )
 		
-		old_value = device.last_value
 		try:
 			device.actuate( value )
 		except ValueError as e:
