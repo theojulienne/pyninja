@@ -1,3 +1,6 @@
 *.pyc
 ninja_token.txt
 test.py
+build
+*.egg-info
+dist

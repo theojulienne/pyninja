@@ -27,6 +27,9 @@ class NinjaAPI(object):
 		
 		json = response.json
 		
+		if callable(json):
+			json = json()
+		
 		if json is None:
 			raise NinjaException( 'API returned empty response (are you authenticated?)' )
 		
