@@ -11,8 +11,11 @@ class NinjaAPI(object):
 		token = open(os.path.expanduser(token_file)).read().strip()
 		return cls( user_access_token=token )
 	
-	def __init__( self, user_access_token=None ):
+	def __init__( self, user_access_token=None, api_server=None ):
 		self._user_access_token = user_access_token
+		if api_server is None:
+		    api_server = os.environ.get( 'NINJA_API_HOST', 'https://api.ninja.is/' )
+		self._api_server = api_server
 	
 	def _call_api( self, endpoint, data=None, unwrap_data=False, http_method='get' ):
 		params = {
@@ -20,7 +23,7 @@ class NinjaAPI(object):
 		}
 		
 		http_call = getattr( requests, http_method )
-		response = http_call( 'https://api.ninja.is/rest/v0/%s' % endpoint, params=params, data=data )
+		response = http_call( self._api_server + 'rest/v0/%s' % endpoint, params=params, data=data )
 		
 		if response.status_code != 200:
 			raise NinjaException( 'API returned HTTP response code %d' % response.status_code )
